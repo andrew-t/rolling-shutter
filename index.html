@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Megapixel Capture</title>
+	<script type="text/javascript" src="main.js"></script>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+	<select id="camera-select"></select>
+	<div id="screen">
+		<video id="video"></video>
+		<canvas id="canvas" class="hidden"></canvas>
+	</div>
+	<button id="snap">Snap</button>
+	<button id="cancel" class="hidden">Cancel</button>
+	<form method="POST" action="magics.php" class="hidden" id="form">
+		<label for="serial">Serial:</label>
+		<input id="serial" name="serial" type="text" />
+		<input id="base64" name="base64" type="text" />
+		<input type="submit" value="Submit" />
+	</form>
+</body>
+</html>
