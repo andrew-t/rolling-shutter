@@ -10,6 +10,7 @@ var canvas,
 	dropdown,
 	base64,
 	form,
+	overlay,
 	screenElement;
 
 window.addEventListener("DOMContentLoaded", function() {
@@ -17,7 +18,8 @@ window.addEventListener("DOMContentLoaded", function() {
 	video = document.getElementById("video");
 	dropdown = document.getElementById('camera-select');
 	base64 = document.getElementById('base64');
-	form = document.getElementById('form'),
+	form = document.getElementById('form');
+	overlay = document.getElementById('overlay');
 	screenElement = document.getElementById('screen');
 
 	window.addEventListener('resize', sizeThings);
@@ -103,9 +105,35 @@ function sizeThings() {
 	var xMargin = 100, yMargin = 500,
 		xRatio = video.videoWidth / (window.innerWidth - xMargin),
 		yRatio = video.videoHeight / (window.innerHeight - yMargin),
-		ratio = Math.max(xRatio, yRatio);
-	screenElement.style.width = video.videoWidth / ratio + 'px';
-	screenElement.style.height = video.videoHeight / ratio + 'px';
+		ratio = Math.max(xRatio, yRatio),
+		videoAspect = video.videoWidth / video.videoHeight,
+		screenWidth = video.videoWidth / ratio,
+		screenHeight = video.videoHeight / ratio,
+		overlayAspect = 1,
+		overlayXMargin = 0.1,
+		overlayYMargin = overlayXMargin,
+		overlayMaxWidth = screenWidth * (1 - 2 * overlayXMargin),
+		overlayMaxHeight = screenHeight * (1 - 2 * overlayYMargin),
+		overlayMaxRatio = overlayMaxWidth / overlayMaxHeight;
+	screenElement.style.width = screenWidth + 'px';
+	screenElement.style.height = screenHeight + 'px';
+	if (overlayMaxRatio > overlayAspect) {
+		overlay.style.height = overlayMaxHeight + 'px';
+		overlay.style.top = (overlayYMargin * screenHeight) + 'px';
+		var overlayWidth = overlayAspect * overlayMaxHeight;
+		overlay.style.width = overlayWidth + 'px';
+		overlay.style.left = ((screenWidth - overlayWidth) / 2) + 'px';
+	} else {
+		overlay.style.width = overlayMaxWidth + 'px';
+		overlay.style.left = (overlayXMargin * screenWidth) + 'px';
+		var overlayHeight = overlayMaxWidth / overlayAspect;
+		overlay.style.height = overlayHeight + 'px';
+		overlay.style.top = ((screenHeight - overlayHeight) / 2) + 'px';
+	}
+	'top,left,width,height'.split(',').forEach(function(key) {
+		document.getElementById('overlay-' + key).value =
+			Math.round(parseInt(overlay.style[key]) * ratio);
+	});
 }
 
 function errBack(error) {
