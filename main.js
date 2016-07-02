@@ -83,22 +83,36 @@ function startCapture(source) {
 	if(navigator.getUserMedia) { // Standard
 		navigator.getUserMedia(opts, function(stream) {
 			video.src = stream;
-			video.play();
+			then();
 		}, errBack);
 	} else if(navigator.webkitGetUserMedia) { // WebKit-prefixed
 		navigator.webkitGetUserMedia(opts, function(stream){
 			video.src = window.webkitURL.createObjectURL(stream);
-			video.play();
+			then();
 		}, errBack);
 	}
 	else if(navigator.mozGetUserMedia) { // Firefox-prefixed
 		navigator.mozGetUserMedia(opts, function(stream){
 			video.src = window.URL.createObjectURL(stream);
-			video.play();
+			then();
 		}, errBack);
 	}
 
 	video.onloadedmetadata = sizeThings;
+
+	function then() {
+		try {
+			video.play();
+		} catch (e) {
+			var cta = document.getElementById('click-to-play');
+			cta.classList.remove('hidden');
+			cta.addEventListener('click', function(e) {
+				cta.classList.add('hidden');
+				video.play();
+				e.preventDefault();
+			});
+		}
+	}
 }
 
 function sizeThings() {
@@ -137,5 +151,5 @@ function sizeThings() {
 }
 
 function errBack(error) {
-	console.log("Video capture error: ", error.code); 
+	console.log("Video capture error: ", error); 
 };

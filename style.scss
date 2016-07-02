@@ -6,7 +6,7 @@
 	width: 640px;
 	height: 480px;
 	background: black;
-	video, canvas {
+	video, canvas, .text {
 		position: absolute;
 		top: 0;
 		left: 0;
@@ -23,6 +23,11 @@
 		position: absolute;
 		border: 2px dashed yellow;
 		z-index: 3;
+	}
+	.text {
+		z-index: 4;
+		font-size: 5vw;
+		color: yellow;
 	}
 }
 
