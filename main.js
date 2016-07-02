@@ -102,7 +102,7 @@ function startCapture(source) {
 }
 
 function sizeThings() {
-	var xMargin = 100, yMargin = 500,
+	var xMargin = 100, yMargin = 200,
 		xRatio = video.videoWidth / (window.innerWidth - xMargin),
 		yRatio = video.videoHeight / (window.innerHeight - yMargin),
 		ratio = Math.max(xRatio, yRatio),
