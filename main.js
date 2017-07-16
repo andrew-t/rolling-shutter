@@ -6,12 +6,13 @@
 */
 
 var canvas,
+	context,
 	video,
 	dropdown,
 	base64,
 	form,
-	overlay,
-	screenElement;
+	interval = 50,
+	intervalHandle;
 
 window.addEventListener("DOMContentLoaded", function() {
 	canvas = document.getElementById("canvas");
@@ -19,8 +20,6 @@ window.addEventListener("DOMContentLoaded", function() {
 	dropdown = document.getElementById('camera-select');
 	base64 = document.getElementById('base64');
 	form = document.getElementById('form');
-	overlay = document.getElementById('overlay');
-	screenElement = document.getElementById('screen');
 
 	window.addEventListener('resize', sizeThings);
 
@@ -52,27 +51,20 @@ window.addEventListener("DOMContentLoaded", function() {
 		dropdown.classList.add('hidden');
 		startCapture();
 	}
-
-	document.getElementById("snap").addEventListener("click", function() {
-		canvas.width = video.videoWidth;
-		canvas.height = video.videoHeight;
-		var context = canvas.getContext("2d");
-		context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-		base64.value = canvas.toDataURL('image/jpeg')
-		                     .substr('data:image/jpeg;base64,'.length);
-		canvas.classList.remove('hidden');
-		form.classList.remove('hidden');
-		snap.classList.add('hidden');
-		cancel.classList.remove('hidden');
-	});
-
-	document.getElementById("cancel").addEventListener("click", function() {
-		canvas.classList.add('hidden');
-		snap.classList.remove('hidden');
-		form.classList.add('hidden');
-		cancel.classList.add('hidden');
-	});
 });
+
+var y = 0;
+function nextFrame() {
+	context.drawImage(video,
+		0, y, video.videoWidth, 1,
+		0, y, video.videoWidth, 1);
+	if (++y >= video.videoHeight)
+		y = 0;
+	context.beginPath();
+	context.moveTo(0, y + 0.5);
+	context.lineTo(video.videoWidth, y + 0.5);
+	context.stroke();
+}
 
 function startCapture(source) {
 	var opts = { video: source
@@ -82,7 +74,7 @@ function startCapture(source) {
 	// Put video listeners into place
 	if(navigator.getUserMedia) { // Standard
 		navigator.getUserMedia(opts, function(stream) {
-			video.src = stream;
+			video.src = window.URL.createObjectURL(stream);
 			then();
 		}, errBack);
 	} else if(navigator.webkitGetUserMedia) { // WebKit-prefixed
@@ -103,6 +95,15 @@ function startCapture(source) {
 	function then() {
 		try {
 			video.play();
+			sizeThings();
+			setTimeout(() => {
+				canvas.width = video.videoWidth;
+				canvas.height = video.videoHeight;
+				context = canvas.getContext("2d");
+				context.lineWidth = 1;
+				context.strokeStyle = '#00ff00';
+				intervalHandle = setInterval(nextFrame, interval);
+			}, 150);
 		} catch (e) {
 			var cta = document.getElementById('click-to-play');
 			cta.classList.remove('hidden');
@@ -116,38 +117,26 @@ function startCapture(source) {
 }
 
 function sizeThings() {
-	var xMargin = 100, yMargin = 200,
-		xRatio = video.videoWidth / (window.innerWidth - xMargin),
-		yRatio = video.videoHeight / (window.innerHeight - yMargin),
-		ratio = Math.max(xRatio, yRatio),
-		videoAspect = video.videoWidth / video.videoHeight,
-		screenWidth = video.videoWidth / ratio,
-		screenHeight = video.videoHeight / ratio,
-		overlayAspect = 1,
-		overlayXMargin = 0.1,
-		overlayYMargin = overlayXMargin,
-		overlayMaxWidth = screenWidth * (1 - 2 * overlayXMargin),
-		overlayMaxHeight = screenHeight * (1 - 2 * overlayYMargin),
-		overlayMaxRatio = overlayMaxWidth / overlayMaxHeight;
-	screenElement.style.width = screenWidth + 'px';
-	screenElement.style.height = screenHeight + 'px';
-	if (overlayMaxRatio > overlayAspect) {
-		overlay.style.height = overlayMaxHeight + 'px';
-		overlay.style.top = (overlayYMargin * screenHeight) + 'px';
-		var overlayWidth = overlayAspect * overlayMaxHeight;
-		overlay.style.width = overlayWidth + 'px';
-		overlay.style.left = ((screenWidth - overlayWidth) / 2) + 'px';
+	var vw = video.videoWidth,
+		vh = video.videoHeight,
+		vr = vw / vh,
+		ww = window.innerWidth,
+		wh = window.innerHeight,
+		wr = ww / wh;
+
+	if (wr > 2 * vr) {
+		video.style.width = canvas.style.width = (wh * vr) + 'px';
+		video.style.height = canvas.style.height = wh + 'px';
+	} else if (wr > vr) {
+		video.style.width = canvas.style.width = (ww / 2) + 'px';
+		video.style.height = canvas.style.height = ((ww / 2) / vr) + 'px';
+	} else if (wr > vr / 2) {
+		video.style.width = canvas.style.width = (wh * vr / 2) + 'px';
+		video.style.height = canvas.style.height = (wh / 2) + 'px';
 	} else {
-		overlay.style.width = overlayMaxWidth + 'px';
-		overlay.style.left = (overlayXMargin * screenWidth) + 'px';
-		var overlayHeight = overlayMaxWidth / overlayAspect;
-		overlay.style.height = overlayHeight + 'px';
-		overlay.style.top = ((screenHeight - overlayHeight) / 2) + 'px';
+		video.style.width = canvas.style.width = ww + 'px';
+		video.style.height = canvas.style.height = (ww / vr) + 'px';
 	}
-	'top,left,width,height'.split(',').forEach(function(key) {
-		document.getElementById('overlay-' + key).value =
-			Math.round(parseInt(overlay.style[key]) * ratio);
-	});
 }
 
 function errBack(error) {

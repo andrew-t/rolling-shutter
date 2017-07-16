@@ -1,36 +1,10 @@
 ---
 ---
 
-#screen {
-	position: relative;
-	width: 640px;
-	height: 480px;
-	background: black;
-	video, canvas, .text {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
+body {
+	margin: 0;
+	padding: 0;
+	#screen {
+		font-size: 0;
 	}
-	video {
-		z-index: 1;
-	}
-	canvas {
-		z-index: 2;
-	}
-	#overlay {
-		position: absolute;
-		border: 2px dashed yellow;
-		z-index: 3;
-	}
-	.text {
-		z-index: 4;
-		font-size: 5vw;
-		color: yellow;
-	}
-}
-
-.hidden {
-	display: none;
 }

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Megapixel Capture</title>
+	<title>Rolling Shutter</title>
 	<script type="text/javascript" src="main.js"></script>
 	<link rel="stylesheet" type="text/css" href="style.css">
 </head>
@@ -10,22 +10,8 @@
 
 	<div id="screen">
 		<video id="video"></video>
-		<div id="overlay"></div>
-		<canvas id="canvas" class="hidden"></canvas>
-		<div id="click-to-play">Click to Play</div>
+		<canvas id="canvas"></canvas>
 	</div>
 
-	<button id="snap">Snap</button>
-	<button id="cancel" class="hidden">Cancel</button>
-	<form method="POST" action="magics.php" class="hidden" id="form">
-		<label for="serial">Serial:</label>
-		<input id="serial" name="serial" type="text" />
-		<input id="base64" name="base64" type="hidden" />
-		<input id="overlay-left" name="x" type="hidden" />
-		<input id="overlay-top" name="overlay-y" type="hidden" />
-		<input id="overlay-width" name="overlay-width" type="hidden" />
-		<input id="overlay-height" name="overlay-height" type="hidden" />
-		<input type="submit" value="Submit" />
-	</form>
 </body>
 </html>
