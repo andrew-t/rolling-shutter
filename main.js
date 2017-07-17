@@ -94,18 +94,25 @@ function startCapture(source) {
 
 	function then() {
 		try {
+			var p = video.play();
+			if (p && p.then)
+				p.then(doPlay, catchIt);
+			else
+				doPlay();
+		} catch (e) {
+			catchIt();
+		}
+	}
+
+	function catchIt() {
+		var cta = document.getElementById('click-to-play');
+		cta.classList.remove('hidden');
+		cta.addEventListener('click', function(e) {
+			cta.classList.add('hidden');
 			video.play();
 			doPlay();
-		} catch (e) {
-			var cta = document.getElementById('click-to-play');
-			cta.classList.remove('hidden');
-			cta.addEventListener('click', function(e) {
-				cta.classList.add('hidden');
-				video.play();
-				doPlay();
-				e.preventDefault();
-			});
-		}
+			e.preventDefault();
+		});
 	}
 
 	function doPlay() {
