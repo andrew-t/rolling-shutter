@@ -15,8 +15,8 @@ body {
 	background: blue;
 	color: white;
 	text-align: center;
-	line-height: 100vw;
-	font-size: 5vmin;
+	line-height: 100vh;
+	font-size: 10vmin;
 }
 .hidden {
 	display: none;
