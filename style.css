@@ -5,3 +5,19 @@ body {
 #screen {
 	font-size: 0;
 }
+#click-to-play {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	z-index: 10;
+	background: blue;
+	color: white;
+	text-align: center;
+	line-height: 100vw;
+	font-size: 5vmin;
+}
+.hidden {
+	display: none;
+}

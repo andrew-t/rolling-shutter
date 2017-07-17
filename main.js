@@ -95,24 +95,29 @@ function startCapture(source) {
 	function then() {
 		try {
 			video.play();
-			sizeThings();
-			setTimeout(() => {
-				canvas.width = video.videoWidth;
-				canvas.height = video.videoHeight;
-				context = canvas.getContext("2d");
-				context.lineWidth = 1;
-				context.strokeStyle = '#00ff00';
-				intervalHandle = setInterval(nextFrame, interval);
-			}, 150);
+			doPlay();
 		} catch (e) {
 			var cta = document.getElementById('click-to-play');
 			cta.classList.remove('hidden');
 			cta.addEventListener('click', function(e) {
 				cta.classList.add('hidden');
 				video.play();
+				doPlay();
 				e.preventDefault();
 			});
 		}
+	}
+
+	function doPlay() {
+		sizeThings();
+		setTimeout(() => {
+			canvas.width = video.videoWidth;
+			canvas.height = video.videoHeight;
+			context = canvas.getContext("2d");
+			context.lineWidth = 1;
+			context.strokeStyle = '#00ff00';
+			intervalHandle = setInterval(nextFrame, interval);
+		}, 150);
 	}
 }
 
