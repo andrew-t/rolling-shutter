@@ -11,8 +11,23 @@ var canvas,
 	dropdown,
 	base64,
 	form,
-	interval = 50,
+	period = 2,
+	lineGroup = 1,
+	interval,
 	intervalHandle;
+
+if (window.location.hash)
+	window.location.hash
+		.substr(1)
+		.split(';')
+		.forEach(part => {
+			if (/fps$/i.test(part))
+				period = 1 / parseFloat(part);
+			else if (/spf$/i.test(part))
+				period = parseFloat(part);
+			else if (/lpf$/i.test(part))
+				lineGroup = parseFloat(part);
+		});
 
 window.addEventListener("DOMContentLoaded", function() {
 	canvas = document.getElementById("canvas");
@@ -56,13 +71,13 @@ window.addEventListener("DOMContentLoaded", function() {
 var y = 0;
 function nextFrame() {
 	context.drawImage(video,
-		0, y, video.videoWidth, 1,
-		0, y, video.videoWidth, 1);
-	if (++y >= video.videoHeight)
+		0, y, video.videoWidth, lineGroup,
+		0, y, video.videoWidth, lineGroup);
+	if ((y += lineGroup) >= video.videoHeight)
 		y = 0;
 	context.beginPath();
-	context.moveTo(0, y + 0.5);
-	context.lineTo(video.videoWidth, y + 0.5);
+	context.moveTo(0, y + lineGroup / 2);
+	context.lineTo(video.videoWidth, y + lineGroup / 2);
 	context.stroke();
 }
 
@@ -118,11 +133,14 @@ function startCapture(source) {
 	function doPlay() {
 		sizeThings();
 		setTimeout(() => {
+			if (!lineGroup)
+				lineGroup = 1;
 			canvas.width = video.videoWidth;
 			canvas.height = video.videoHeight;
 			context = canvas.getContext("2d");
-			context.lineWidth = 1;
+			context.lineWidth = lineGroup;
 			context.strokeStyle = '#00ff00';
+			interval = 1000 * (period || 2) / video.videoHeight;
 			intervalHandle = setInterval(nextFrame, interval);
 		}, 150);
 	}
