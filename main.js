@@ -87,23 +87,21 @@ function startCapture(source) {
 			: true
 		};
 	// Put video listeners into place
-	if(navigator.getUserMedia) { // Standard
-		navigator.getUserMedia(opts, function(stream) {
+	if(navigator.getUserMedia) // Standard
+		navigator.getUserMedia(opts, applyStream, errBack);
+	else if(navigator.webkitGetUserMedia) // WebKit-prefixed
+		navigator.webkitGetUserMedia(opts, applyStream, errBack);
+	else if(navigator.mozGetUserMedia) // Firefox-prefixed
+		navigator.mozGetUserMedia(opts, applyStream, errBack);
+	function applyStream(stream) {
+		if ('srcObject' in video)
+			video.srcObject = stream;
+		else if (window.URL)
 			video.src = window.URL.createObjectURL(stream);
-			then();
-		}, errBack);
-	} else if(navigator.webkitGetUserMedia) { // WebKit-prefixed
-		navigator.webkitGetUserMedia(opts, function(stream){
+		else
 			video.src = window.webkitURL.createObjectURL(stream);
-			then();
-		}, errBack);
-	}
-	else if(navigator.mozGetUserMedia) { // Firefox-prefixed
-		navigator.mozGetUserMedia(opts, function(stream){
-			video.src = window.URL.createObjectURL(stream);
-			then();
-		}, errBack);
-	}
+		then();
+	};
 
 	video.onloadedmetadata = sizeThings;
 
